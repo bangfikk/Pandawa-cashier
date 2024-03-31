@@ -13,7 +13,7 @@ require_once('./db/DB_login.php');
 </head>
 <body>
     <div class="container">
-    <img src="./assets/images/st-cashier.png" width="65%" style="display: block; margin: 0 auto;">
+    <img src="./assets/images/logo.png" width="65%" style="display: block; margin: 0 auto;">
         <form method="POST">
             <?php if (isset($error_message)) : ?>
                 <div class="error-message"><?php echo $error_message; ?></div>
