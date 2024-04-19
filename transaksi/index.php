@@ -6,9 +6,8 @@ if (!$role) {
     header("Location: ../");
     exit();
 }
-include_once '../../db/db_config.php';
+include_once '../db/db_config.php';
 
-// Fungsi untuk mencari produk berdasarkan kata kunci
 function cariProduk($keyword) {
     global $conn;
     $query = "SELECT * FROM products WHERE nama_produk LIKE '%$keyword%' OR harga_produk LIKE '%$keyword%' OR kode_unik LIKE '%$keyword%'";
@@ -20,15 +19,12 @@ function cariProduk($keyword) {
     return $rows;
 }
 
-// Fungsi untuk menambahkan produk ke dalam transaksi
 function tambahkanProduk($id, $jumlah) {
     global $conn;
     $query = "SELECT * FROM products WHERE id = $id";
     $result = mysqli_query($conn, $query);
     $produk = mysqli_fetch_assoc($result);
-    if ($jumlah <= 0) {
-        return false;
-    } elseif ($jumlah > $produk['jumlah']) {
+    if ($jumlah > $produk['jumlah']) {
         return false; 
     } else {
         $produk['jumlah'] = $jumlah;
@@ -36,14 +32,11 @@ function tambahkanProduk($id, $jumlah) {
     }
 }
 
-// Fungsi untuk mengurangi jumlah produk dalam transaksi
 function kurangiProduk($index) {
     $struk = isset($_SESSION['struk']) ? $_SESSION['struk'] : [];
     unset($struk[$index]);
     $_SESSION['struk'] = array_values($struk);
 }
-
-// Fungsi untuk mengecek apakah produk sudah ada dalam transaksi
 function cekProduk($produk, $struk) {
     foreach ($struk as $index => $item) {
         if ($item['id'] == $produk['id']) {
@@ -53,12 +46,10 @@ function cekProduk($produk, $struk) {
     return -1;
 }
 
-// Mendapatkan data transaksi dari session
 $struk = isset($_SESSION['struk']) ? $_SESSION['struk'] : [];
 $totalHarga = isset($_SESSION['totalHarga']) ? $_SESSION['totalHarga'] : 0;
 $error = '';
 
-// Mendapatkan data produk berdasarkan pencarian atau menampilkan semua produk
 $rows = [];
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['keyword'])) {
@@ -72,13 +63,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['keyword'])) {
     }
 }
 
-// Menambahkan produk ke dalam transaksi jika permintaan POST diterima
 if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['id']) && isset($_GET['tambah'])) {
     $id_produk = $_GET['id'];
     $jumlah = isset($_GET['jumlah']) ? $_GET['jumlah'] : 1;
     $produk = tambahkanProduk($id_produk, $jumlah);
     if ($produk === false) {
-        $error = 'Jumlah produk tidak valid!';
+        $error = 'Jumlah produk melebihi ketersediaan!';
     } else {
         $index = cekProduk($produk, $struk);
         if ($index != -1) {
@@ -86,7 +76,6 @@ if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['id']) && isset($_GET['ta
         } else {
             array_push($struk, $produk);
         }
-        // Menghitung total harga setelah menambahkan produk
         $totalHarga = 0;
         foreach ($struk as $item) {
             $totalHarga += $item['harga_produk'] * $item['jumlah'];
@@ -96,29 +85,24 @@ if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['id']) && isset($_GET['ta
     }
 }
 
-// Melakukan tindakan ketika tombol "Kurang" diklik untuk mengurangi jumlah produk dalam transaksi
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['kurang'])) {
     $index = $_POST['index'];
     kurangiProduk($index);
     header("Location: " . $_SERVER['PHP_SELF']); 
 }
 
-// Melakukan tindakan ketika tombol "Cetak" diklik untuk menyimpan transaksi
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['cetak'])) {
     if (isset($_POST['uang']) && isset($_POST['kembalian'])) {
         $uang = $_POST['uang'];
         $kembalian_transaksi = $_POST['kembalian'];
 
-        // Memasukkan informasi transaksi ke dalam tabel 'transaksi'
         $query_transaksi = "INSERT INTO transaksi (uang_pelanggan, kembalian, total_harga) VALUES ($uang, $kembalian_transaksi, $totalHarga)";
         $result_transaksi = mysqli_query($conn, $query_transaksi);
         if (!$result_transaksi) {
             $error = 'Gagal menyimpan transaksi!';
         } else {
-            // Mendapatkan ID transaksi yang baru saja dimasukkan
             $id_transaksi = mysqli_insert_id($conn);
 
-            // Memasukkan informasi produk dalam transaksi ke dalam tabel 'transaksi_produk' dan mengurangi jumlah produk dalam tabel 'products'
             foreach ($struk as $produk) {
                 $nama_produk = $produk['nama_produk'];
                 $harga_produk = $produk['harga_produk'];
@@ -126,7 +110,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['cetak'])) {
                 $kode_unik = $produk['kode_unik'];
                 $totalHargaProduk = $harga_produk * $jumlah;
                 
-                $query_produk = "INSERT INTO transaksi_produk (id_transaksi, nama_produk, harga_produk, jumlah, kode_unik, total_harga) VALUES ($id_transaksi, '$nama_produk', '$harga_produk', $jumlah, '$kode_unik', $totalHargaProduk)";
+                $query_produk = "INSERT INTO transaksi_produk (id_transaksi, nama_produk, harga_produk, jumlah, kode_unik, total_harga) VALUES ($id_transaksi, '$nama_produk', $harga_produk, $jumlah, '$kode_unik', $totalHargaProduk)";
                 $result_produk = mysqli_query($conn, $query_produk);
                 if (!$result_produk) {
                     $error = 'Gagal menyimpan informasi produk dalam transaksi!';
@@ -141,13 +125,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['cetak'])) {
                 }
             }
 
-            // Mengosongkan session transaksi dan total harga setelah transaksi selesai
             $_SESSION['struk'] = [];
             $_SESSION['totalHarga'] = 0;
             $struk = [];
             $totalHarga = 0;
 
-            // Mengarahkan ke halaman cetak struk dengan ID transaksi
             header("Location: cetak_struk.php?id_transaksi=$id_transaksi");
             exit(); 
         }
@@ -156,7 +138,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['cetak'])) {
     }
 }
 
-// Melakukan tindakan ketika tombol "Perbarui Transaksi" diklik untuk mengosongkan transaksi
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['refresh'])) {
     $_SESSION['struk'] = [];
     $_SESSION['totalHarga'] = 0;
@@ -173,10 +154,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['refresh'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Transaksi Kasir</title>
-    <link rel="shortcut icon" type="image/x-icon" href="../../assets/img/logo.png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../../style/style.css">
-    <style>
+    <link rel="stylesheet" href="../style/style.css">
+
+    <style media="print">
+        @page {
+            size: auto; 
+            margin: 0;     
+        }
+
+        body {
+            margin: 0;
+        }
+
         body {
             margin: 0;
             padding: 0;
@@ -236,35 +226,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['refresh'])) {
         .logout-link:hover {
             color: #f8d7da !important;
         }
-        .btn-tambah-kasir {
-            background-color: #28a745;
-            border-color: #28a745;
+        .container {
+            padding: 20px;
         }
-        .btn-tambah-kasir:hover {
-            background-color: #218838;
-            border-color: #1e7e34;
+
+        .struk-print {
+            border: 1px solid black;
+            padding: 10px;
         }
-        .btn-edit-kasir {
-            background-color: #007bff;
-            border-color: #007bff;
+
+        .no-print {
+            display: none;
         }
-        .btn-edit-kasir:hover {
-            background-color: #0069d9;
-            border-color: #0062cc;
-        }
-        .btn-batal-edit-kasir {
-            background-color: #dc3545;
-            border-color: #dc3545;
-        }
-        .btn-batal-edit-kasir:hover {
-            background-color: #c82333;
-            border-color: #bd2130;
-        }
-        .mb-4 {
-    background-color: orangered;
-    color: #fff;
-    padding: 10px;
-}
+
     </style>
 </head>
 <body>
@@ -275,21 +249,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['refresh'])) {
             </div>
             <ul class="nav flex-column">
                 <li class="nav-item <?php echo ($role === 'admin') ? '' : 'd-none'; ?>">
-                    <a class="nav-link" href="../admin/">Kelola Akun</a>
+                    <a class="nav-link" href="index.php">Kelola Akun</a>
                 </li>
                 <li class="nav-item <?php echo ($role === 'admin' || $role === 'owner') ? '' : 'd-none'; ?>">
-                    <a class="nav-link" href="../activity/log_activity.php">Log Activity</a>
+                    <a class="nav-link" href="activity/log_activity.php">Log Activity</a>
                 </li>
-                <li class="nav-item <?php echo ($role === 'admin' || $role === 'kasir') ? '' : 'd-none'; ?>">
+                <li class="nav-item <?php echo ($role === 'admin' || $role === 'owner' || $role === 'kasir') ? '' : 'd-none'; ?>">
                     <a class="nav-link" href="../transaksi/">Transaksi</a>
                 </li>
                 <li class="nav-item <?php echo ($role === 'admin') ? '' : 'd-none'; ?>">
                     <a class="nav-link" href="../product/">Data Produk</a>
                 </li>
+                <li class="nav-item <?php echo ($role === 'owner') ? '' : 'd-none'; ?>">
+                    <a class="nav-link" href="owner/laporan.php">Laporan</a>
+                </li>
             </ul>
             <ul class="nav flex-column mt-auto">
                 <li class="nav-item">
-                    <a class="nav-link logout-link" href="../../auth/logout.php">Keluar</a>
+                    <a class="nav-link logout-link" href="../auth/logout.php">Keluar</a>
                 </li>
             </ul>
         </div>
@@ -387,7 +364,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['refresh'])) {
     </div>
     
 
-    <!-- JavaScript untuk cetak struk -->
+    <!-- JavaScript untuk mencetak struk -->
     <script>
         function printStruk() {
             window.print();

@@ -1,8 +1,8 @@
 <?php
 session_start();
-include_once '../../db/db_config.php';
+include_once '../db/db_config.php';
 
-// Memeriksa apakah ID transaksi disediakan dalam parameter GET
+// Periksa apakah ID transaksi disediakan dalam parameter GET
 if (!isset($_GET['id_transaksi'])) {
     echo "ID transaksi tidak ditemukan.";
     exit();
@@ -13,7 +13,7 @@ $id_transaksi = $_GET['id_transaksi'];
 $query = "SELECT * FROM transaksi_produk WHERE id_transaksi = $id_transaksi";
 $result = mysqli_query($conn, $query);
 
-// Memastikan data transaksi ditemukan
+// Pastikan data transaksi ditemukan
 if (mysqli_num_rows($result) == 0) {
     echo "Data transaksi tidak ditemukan.";
     exit();
@@ -26,7 +26,7 @@ while ($row = mysqli_fetch_assoc($result)) {
     $totalHarga += $row['total_harga'];
 }
 
-// Mengambil data uang pelanggan dan kembalian dari database
+// Ambil data uang pelanggan dan kembalian dari database
 $query_transaksi = "SELECT * FROM transaksi WHERE id = $id_transaksi";
 $result_transaksi = mysqli_query($conn, $query_transaksi);
 if (!$result_transaksi) {
@@ -44,7 +44,6 @@ $kembalian = $transaksi['kembalian'];
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cetak Struk Transaksi</title>
-    <link rel="shortcut icon" type="image/x-icon" href="../../assets/img/logo.png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
@@ -83,7 +82,7 @@ $kembalian = $transaksi['kembalian'];
 <body>
     <div class="container">
         <div class="text-center">
-            <img src="../../assets/img/logo.png" alt="Logo" class="logo">
+            <img src="../img/logo.png" alt="Logo" class="logo">
             <h2>Struk Pembayaran</h2>
         </div>
         <?php foreach ($transaksi_produk as $produk) : ?>
