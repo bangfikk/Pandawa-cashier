@@ -64,7 +64,7 @@ if (!$result) {
             left: 0;
             width: 250px;
             padding-top: 3.5rem;
-            background-color: #343a40;
+            background-color: #725C07;
             color: #fff;
             z-index: 1;
             overflow-y: auto;
@@ -74,14 +74,14 @@ if (!$result) {
             color: #fff;
         }
         .sidebar .nav-link:hover {
-            background-color: #495057;
+            background-color: #493B04;
         }
         .content {
             margin-left: 250px;
             padding: 20px;
         }
         .sidebar-header {
-            background-color: #212529;
+            background-color: #493B04;
             padding: 20px;
             text-align: center;
         }

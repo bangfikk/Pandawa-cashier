@@ -38,7 +38,7 @@ $conn->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
-    <link rel="shortcut icon" type="image/x-icon" href="assets/img/logo.png">
+    <link rel="shortcut icon" type="image/x-icon" href="assets/img/logo.png ">
     <link rel="stylesheet" href="style/style.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
@@ -55,26 +55,26 @@ $conn->close();
             box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
         }
         .card-header {
-            background-color: #c9c4c3;
+            background-color: white;
             color: #fff;
             border-radius: 15px 15px 0 0;
         }
         .logo {
             text-align: center;
-            margin-bottom: 20px;
+            
         }
         .logo img {
-            width: 150px;
+            width: 385px;
             height: auto;
         }
         .btn-outline-orange {
-            color: orange;
-            border-color: orange;
+            color: blue;
+            border-color: blue;
         }
 
         .btn-outline-orange:hover {
             color: white;
-            background-color: orange;
+            background-color: blue;
         }
     </style>
 </head>

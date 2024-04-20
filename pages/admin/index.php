@@ -101,7 +101,7 @@ if (isset($_GET['id'])) {
             left: 0;
             width: 250px;
             padding-top: 3.5rem;
-            background-color: #343a40;
+            background-color: #725C07;
             color: #fff;
             z-index: 1;
             overflow-y: auto;
@@ -111,14 +111,14 @@ if (isset($_GET['id'])) {
             color: #fff;
         }
         .sidebar .nav-link:hover {
-            background-color: #495057;
+            background-color: #493B04;
         }
         .content {
             margin-left: 250px;
             padding: 20px;
         }
         .sidebar-header {
-            background-color: #212529;
+            background-color: #493B04;
             padding: 20px;
             text-align: center;
         }
@@ -167,7 +167,7 @@ if (isset($_GET['id'])) {
             border-color: #bd2130;
         }
         .mb-4 {
-    background-color: orangered;
+    background-color: #493B04;
     color: #fff;
     padding: 10px;
 }

@@ -40,7 +40,7 @@ if (!$role) {
             left: 0;
             width: 250px;
             padding-top: 3.5rem;
-            background-color: #343a40;
+            background-color: #725C07;
             color: #fff;
             z-index: 1;
             overflow-y: auto;
@@ -50,14 +50,14 @@ if (!$role) {
             color: #fff;
         }
         .sidebar .nav-link:hover {
-            background-color: #495057;
+            background-color: #493B04;
         }
         .content {
             margin-left: 250px;
             padding: 20px;
         }
         .sidebar-header {
-            background-color: #212529;
+            background-color: #493B04;
             padding: 20px;
             text-align: center;
         }
@@ -138,8 +138,9 @@ if (!$role) {
                 </li>
             </ul>
         </div>
-    <div class="content">
-        <h1>Selamat Datang Di Aplikasi UPS SMK SUMATRA 40</h1>
+    <div class="content" style="text-align: center;" >
+        <img src="assets/img/logo.png" width="700px">
+        <h1>Selamat Datang Di Pandawa Kasir </h1>
     </div>
 </body>
 </html>
